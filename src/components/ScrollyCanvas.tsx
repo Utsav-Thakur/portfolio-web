@@ -83,17 +83,17 @@ export default function ScrollyCanvas() {
           offsetX = (canvas.width - drawWidth) / 2;
         }
 
-        // Scale by 6% to crop out the AI watermark in the bottom right corner
-        const scaleFactor = 1.06;
+        // Scale by 12% to crop out the AI watermark in the bottom right corner
+        const scaleFactor = 1.12;
         const originalWidth = drawWidth;
         const originalHeight = drawHeight;
         
         drawWidth *= scaleFactor;
         drawHeight *= scaleFactor;
         
-        // Re-center the scaled image
-        offsetX -= (drawWidth - originalWidth) / 2;
-        offsetY -= (drawHeight - originalHeight) / 2;
+        // Shift slightly up and left to focus the crop on the bottom right corner
+        offsetX -= (drawWidth - originalWidth) * 0.75;
+        offsetY -= (drawHeight - originalHeight) * 0.75;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);

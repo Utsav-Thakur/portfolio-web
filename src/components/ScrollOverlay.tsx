@@ -22,6 +22,9 @@ export default function ScrollOverlay({ scrollYProgress }: { scrollYProgress: Mo
         style={{ opacity: opacity1, y: y1 }}
         className="absolute inset-0 flex flex-col items-center justify-center text-center"
       >
+        <h1 className="text-3xl md:text-5xl font-semibold tracking-tight drop-shadow-lg text-white">
+          Utsav Kumar Thakur
+        </h1>
       </motion.div>
 
       {/* Section 2 */}
