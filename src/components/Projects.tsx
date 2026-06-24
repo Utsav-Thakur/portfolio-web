@@ -8,7 +8,7 @@ const projects = [
     title: 'Data-Driven Cost Optimization and Decision Analytics',
     category: 'Optimization & Analytics',
     description: 'Analysed 200+ scenarios and applied optimization techniques to improve resource allocation. Delivered a 20% performance improvement through data-driven models using Python.',
-    demoLink: 'https://utsav-thakur-tsp.vercel.app',
+    demoLink: '/tsp/index.html',
     codeLink: 'https://github.com/Utsav-Thakur/TSP'
   },
   {

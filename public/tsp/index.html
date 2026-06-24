@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utsav Kumar Thakur | Portfolio</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a192f;
+            --bg-dark-accent: #0f223f;
+            --bg-card: rgba(23, 42, 69, 0.7);
+            --bg-card-hover: rgba(23, 42, 69, 0.95);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --color-teal: #64ffda;
+            --color-teal-hover: #52ecd0;
+            --color-teal-glow: rgba(100, 255, 218, 0.15);
+            --border-color: rgba(100, 255, 218, 0.1);
+            --border-hover: rgba(100, 255, 218, 0.3);
+            --font-primary: 'Outfit', sans-serif;
+            --font-headings: 'Space Grotesk', sans-serif;
+            --transition-speed: 0.3s;
+            --transition-bezier: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(100, 255, 218, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(15, 34, 63, 0.8) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-dark-accent);
+            border-radius: 4px;
+            border: 2px solid var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-teal);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header & Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(10, 25, 47, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition-speed) var(--transition-bezier);
+        }
+        
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.7);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            transition: var(--transition-speed) var(--transition-bezier);
+        }
+        
+        .navbar.scrolled .nav-container {
+            height: 60px;
+        }
+
+        .logo {
+            font-family: var(--font-headings);
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: var(--transition-speed);
+        }
+
+        .logo span {
+            color: var(--color-teal);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-family: var(--font-headings);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition-speed) var(--transition-bezier);
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--color-teal);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--color-teal);
+            transition: var(--transition-speed) var(--transition-bezier);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1100;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background-color: var(--text-primary);
+            margin: 5px 0;
+            transition: var(--transition-speed);
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 5px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -5px);
+        }
+
+        /* Sections General */
+        section {
+            padding: 100px 0 80px 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-header h2 {
+            font-family: var(--font-headings);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: inline-block;
+        }
+
+        .section-header h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: var(--color-teal);
+            margin-top: 0.5rem;
+            border-radius: 2px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            margin-top: 0.75rem;
+            font-size: 1.1rem;
+            max-width: 600px;
+        }
+
+        /* Hero Section */
+        #hero {
+            padding-top: 140px;
+            background-image: radial-gradient(circle at 80% 20%, rgba(100, 255, 218, 0.08) 0%, transparent 40%);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s var(--transition-speed) var(--transition-bezier) forwards;
+        }
+
+        .hero-greeting {
+            color: var(--color-teal);
+            font-family: var(--font-headings);
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-family: var(--font-headings);
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--text-primary) 30%, var(--text-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-headings);
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--color-teal);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-desc {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 580px;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.85rem 1.75rem;
+            border-radius: 8px;
+            font-family: var(--font-headings);
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition-speed) var(--transition-bezier);
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: transparent;
+            color: var(--color-teal);
+            border: 1px solid var(--color-teal);
+            box-shadow: 0 4px 20px -5px var(--color-teal-glow);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-teal-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px -2px var(--color-teal-glow);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-dark-accent);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-card);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Graphic */
+        .hero-graphic {
+            position: relative;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: fadeInScale 1s var(--transition-bezier) 0.2s forwards;
+        }
+
+        .tsp-canvas-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            background: radial-gradient(circle at center, rgba(15, 34, 63, 0.4) 0%, rgba(10, 25, 47, 0.9) 100%);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: 0 20px 40px -15px rgba(2, 12, 27, 0.7);
+        }
+
+        .node-network {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* About Section */
+        #about .about-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 4rem;
+            align-items: flex-start;
+        }
+
+        .about-text p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text p strong {
+            color: var(--text-primary);
+        }
+
+        .about-highlight-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        .about-highlight-box h3 {
+            font-family: var(--font-headings);
+            color: var(--color-teal);
+            margin-bottom: 0.75rem;
+            font-size: 1.3rem;
+        }
+
+        .about-highlight-box p {
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+
+        .about-profile {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .profile-img-wrapper {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--color-teal);
+            box-shadow: 0 20px 40px -15px rgba(2, 12, 27, 0.7);
+        }
+        
+        .profile-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bg-dark-accent) 0%, var(--bg-dark) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-teal);
+            font-family: var(--font-headings);
+            font-weight: 700;
+            font-size: 2rem;
+            border-radius: 14px;
+        }
+        
+        .profile-placeholder span {
+            font-size: 0.85rem;
+            font-family: var(--font-primary);
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .profile-img-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--color-teal-glow);
+            mix-blend-mode: screen;
+            transition: var(--transition-speed);
+        }
+
+        .profile-img-wrapper:hover::after {
+            opacity: 0;
+        }
+
+        .profile-decorator {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 280px;
+            height: 280px;
+            border: 2px solid var(--color-teal);
+            border-radius: 16px;
+            z-index: -1;
+            transition: var(--transition-speed);
+        }
+
+        .about-profile:hover .profile-decorator {
+            transform: translate(8px, 8px);
+            border-color: var(--color-teal);
+        }
+
+        /* Projects Section */
+        .project-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            transition: var(--transition-speed) var(--transition-bezier);
+            box-shadow: 0 15px 35px -15px rgba(2, 12, 27, 0.5);
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--border-hover);
+            background: var(--bg-card-hover);
+            box-shadow: 0 25px 45px -15px rgba(2, 12, 27, 0.7);
+        }
+
+        .project-visual {
+            background: radial-gradient(circle at center, rgba(15, 34, 63, 0.7) 0%, rgba(10, 25, 47, 1) 100%);
+            border-right: 1px solid var(--border-color);
+            position: relative;
+            padding: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .project-card:hover .project-visual {
+            border-right-color: var(--border-hover);
+        }
+
+        .project-details {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .project-badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .tech-badge {
+            background-color: var(--bg-dark-accent);
+            color: var(--color-teal);
+            border: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            font-family: var(--font-headings);
+            font-weight: 500;
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: var(--transition-speed);
+        }
+        
+        .project-card:hover .tech-badge {
+            border-color: var(--border-hover);
+        }
+
+        .project-title {
+            font-family: var(--font-headings);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .project-description {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 1.75rem;
+            line-height: 1.6;
+        }
+
+        /* Stat Callout */
+        .stat-callout {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            background: rgba(100, 255, 218, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 2rem;
+            width: fit-content;
+            transition: var(--transition-speed);
+        }
+
+        .project-card:hover .stat-callout {
+            border-color: var(--border-hover);
+            background: rgba(100, 255, 218, 0.05);
+        }
+
+        .stat-value {
+            font-family: var(--font-headings);
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--color-teal);
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.2;
+            max-width: 150px;
+        }
+
+        /* Project UI visualization */
+        .visual-diagram {
+            width: 100%;
+            height: 100%;
+            min-height: 250px;
+            position: relative;
+        }
+
+        /* Skills Section */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .skills-intro p {
+            color: var(--text-secondary);
+            font-size: 1.15rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .skills-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .skill-item {
+            width: 100%;
+        }
+
+        .skill-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
+        }
+
+        .skill-name {
+            font-family: var(--font-headings);
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--text-primary);
+        }
+
+        .skill-percentage {
+            font-family: var(--font-headings);
+            font-weight: 600;
+            color: var(--color-teal);
+            font-size: 1.05rem;
+        }
+
+        .skill-progress-bg {
+            background-color: var(--bg-dark-accent);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .skill-progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--bg-dark-accent), var(--color-teal));
+            border-radius: 5px;
+            width: 0; 
+            transition: width 1.5s cubic-bezier(0.1, 1, 0.1, 1);
+            position: relative;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.4);
+        }
+
+        /* Contact & Footer Section */
+        #contact {
+            min-height: auto;
+            padding: 120px 0 60px 0;
+            background-image: radial-gradient(circle at 50% 100%, rgba(100, 255, 218, 0.05) 0%, transparent 60%);
+        }
+
+        .contact-content {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-title {
+            font-family: var(--font-headings);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .contact-desc {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--bg-dark-accent);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            transition: var(--transition-speed) var(--transition-bezier);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .contact-btn:hover {
+            color: var(--color-teal);
+            border-color: var(--color-teal);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px -5px var(--color-teal-glow);
+            background-color: var(--bg-card);
+        }
+
+        .contact-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .contact-btn::after {
+            content: attr(data-label);
+            position: absolute;
+            bottom: -30px;
+            font-size: 0.8rem;
+            font-family: var(--font-headings);
+            color: var(--text-secondary);
+            opacity: 0;
+            transition: var(--transition-speed);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .contact-btn:hover::after {
+            opacity: 1;
+            bottom: -25px;
+            color: var(--color-teal);
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer p span {
+            color: var(--color-teal);
+        }
+
+        /* Modal Overlay & Iframe container */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(2, 12, 27, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition-speed) var(--transition-bezier);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-container {
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            background-color: var(--bg-dark);
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(100%);
+            transition: transform var(--transition-speed) var(--transition-bezier);
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2rem;
+            background-color: var(--bg-dark-accent);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-family: var(--font-headings);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .modal-title span {
+            color: var(--color-teal);
+            font-size: 0.8rem;
+            background: rgba(100, 255, 218, 0.1);
+            border: 1px solid var(--border-color);
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-speed);
+        }
+
+        .modal-close:hover {
+            color: var(--color-teal);
+            border-color: var(--color-teal);
+            background-color: var(--color-teal-glow);
+            transform: rotate(90deg);
+        }
+
+        .modal-close svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .modal-body {
+            flex-grow: 1;
+            position: relative;
+            background-color: #070614; 
+        }
+
+        .modal-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .modal-iframe.loaded {
+            opacity: 1;
+        }
+
+        /* Loading Spinner */
+        .modal-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-secondary);
+            font-family: var(--font-headings);
+            font-size: 0.95rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(100, 255, 218, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--color-teal);
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.2);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive Layouts */
+        @media (max-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1.1fr 0.9fr;
+                gap: 2rem;
+            }
+            .hero-title {
+                font-size: 3.2rem;
+            }
+            .project-card {
+                grid-template-columns: 1fr;
+            }
+            .project-visual {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 2rem;
+                min-height: 280px;
+            }
+            .project-card:hover .project-visual {
+                border-bottom-color: var(--border-hover);
+            }
+            .skills-grid {
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            section {
+                padding: 80px 0 60px 0;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background-color: var(--bg-dark);
+                flex-direction: column;
+                justify-content: center;
+                gap: 3rem;
+                padding-bottom: 80px;
+                transform: translateX(100%);
+                transition: transform var(--transition-speed) var(--transition-bezier);
+                border-top: 1px solid var(--border-color);
+            }
+            .nav-links.active {
+                transform: translateX(0);
+            }
+            .navbar.scrolled .nav-links {
+                top: 60px;
+                height: calc(100vh - 60px);
+            }
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 3rem;
+            }
+            .hero-title {
+                font-size: 2.8rem;
+            }
+            .hero-desc {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .hero-ctas {
+                justify-content: center;
+            }
+            .hero-graphic {
+                height: 300px;
+            }
+            .about-grid {
+                grid-template-columns: 1fr !important;
+                gap: 3rem;
+            }
+            .about-profile {
+                order: -1;
+            }
+            .skills-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            .modal-container {
+                width: 100%;
+                height: 100%;
+            }
+            .modal-header {
+                padding: 1rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.15rem;
+            }
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            .hero-subtitle {
+                font-size: 1.4rem;
+            }
+            .hero-ctas {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+            .btn {
+                width: 100%;
+            }
+            .project-details {
+                padding: 2rem 1.5rem;
+            }
+            .stat-callout {
+                width: 100%;
+                justify-content: center;
+            }
+            .contact-links {
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">Utsav Kumar Thakur<span>.</span></a>
+            <button class="menu-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="nav-links-menu">
+                <li><a href="#about" class="nav-link-item">About</a></li>
+                <li><a href="#projects" class="nav-link-item">Projects</a></li>
+                <li><a href="#skills" class="nav-link-item">Skills</a></li>
+                <li><a href="#contact" class="nav-link-item">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <p class="hero-greeting">Hi, my name is</p>
+                <h1 class="hero-title">Utsav Kumar Thakur</h1>
+                <p class="hero-subtitle">MSc Operational Research | Data Science & Analytics</p>
+                <p class="hero-desc">
+                    I specialize in optimization models, operational analytics, and heuristic solvers. I design mathematical algorithms to solve complex decision-making problems, delivering measurable business cost and route efficiency improvements.
+                </p>
+                <div class="hero-ctas">
+                    <a href="#projects" class="btn btn-primary">View Featured Project</a>
+                    <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+                </div>
+            </div>
+            
+            <div class="hero-graphic">
+                <div class="tsp-canvas-bg">
+                    <svg class="node-network" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Connecting path -->
+                        <path d="M 80,100 L 220,60 L 320,120 L 280,240 L 340,320 L 180,340 L 60,300 L 120,200 Z" 
+                              fill="none" 
+                              stroke="#64ffda" 
+                              stroke-width="2.5" 
+                              stroke-dasharray="1000" 
+                              stroke-dashoffset="1000"
+                              style="animation: drawLine 6s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;">
+                        </path>
+                        
+                        <!-- Connecting light dashes -->
+                        <path d="M 80,100 L 280,240 M 220,60 L 180,340 M 120,200 L 340,320" 
+                              fill="none" 
+                              stroke="rgba(100, 255, 218, 0.15)" 
+                              stroke-width="1.5" 
+                              stroke-dasharray="5,5">
+                        </path>
+
+                        <!-- Glow circles for nodes -->
+                        <circle cx="80" cy="100" r="12" fill="rgba(100, 255, 218, 0.15)"></circle>
+                        <circle cx="220" cy="60" r="12" fill="rgba(100, 255, 218, 0.15)"></circle>
+                        <circle cx="320" cy="120" r="12" fill="rgba(100, 255, 218, 0.15)"></circle>
+                        <circle cx="280" cy="240" r="12" fill="rgba(100, 255, 218, 0.15)"></circle>
+                        <circle cx="340" cy="320" r="12" fill="rgba(100, 255, 218, 0.15)"></circle>
+                        <circle cx="180" cy="340" r="12" fill="rgba(100, 255, 218, 0.15)"></circle>
+                        <circle cx="60" cy="300" r="12" fill="rgba(100, 255, 218, 0.15)"></circle>
+                        <circle cx="120" cy="200" r="12" fill="rgba(100, 255, 218, 0.15)"></circle>
+
+                        <!-- Node dots -->
+                        <circle cx="80" cy="100" r="5" fill="#64ffda"></circle>
+                        <circle cx="220" cy="60" r="5" fill="#64ffda"></circle>
+                        <circle cx="320" cy="120" r="5" fill="#64ffda"></circle>
+                        <circle cx="280" cy="240" r="5" fill="#64ffda"></circle>
+                        <circle cx="340" cy="320" r="5" fill="#64ffda"></circle>
+                        <circle cx="180" cy="340" r="5" fill="#64ffda"></circle>
+                        <circle cx="60" cy="300" r="5" fill="#64ffda"></circle>
+                        <circle cx="120" cy="200" r="5" fill="#64ffda"></circle>
+
+                        <!-- Labels -->
+                        <text x="80" y="85" fill="#94a3b8" font-family="'Space Grotesk'" font-size="11" text-anchor="middle">Start</text>
+                        <text x="220" y="45" fill="#94a3b8" font-family="'Space Grotesk'" font-size="10" text-anchor="middle">Node A</text>
+                        <text x="335" y="110" fill="#94a3b8" font-family="'Space Grotesk'" font-size="10">Node B</text>
+                        <text x="295" y="235" fill="#94a3b8" font-family="'Space Grotesk'" font-size="10">Node C</text>
+                        <text x="340" y="340" fill="#94a3b8" font-family="'Space Grotesk'" font-size="10" text-anchor="middle">Node D</text>
+                        <text x="180" y="360" fill="#94a3b8" font-family="'Space Grotesk'" font-size="10" text-anchor="middle">Node E</text>
+                        <text x="45" y="320" fill="#94a3b8" font-family="'Space Grotesk'" font-size="10">Node F</text>
+                        <text x="105" y="195" fill="#94a3b8" font-family="'Space Grotesk'" font-size="10">Node G</text>
+                    </svg>
+                    
+                    <style>
+                        @keyframes drawLine {
+                            from {
+                                stroke-dashoffset: 1000;
+                            }
+                            to {
+                                stroke-dashoffset: 0;
+                            }
+                        }
+                    </style>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <div class="section-header">
+                <h2>About Me</h2>
+                <p>Translating mathematical logic and heuristic search spaces into software solutions.</p>
+            </div>
+            
+            <div class="about-grid">
+                <div class="about-text">
+                    <p>
+                        I hold an <strong>MSc in Operational Research</strong>, focusing on algorithm design, data structures, and advanced optimization paradigms. My primary academic and professional interest lies in solving complex combinatorial logistics and routing problems like the <strong>Travelling Salesperson Problem (TSP)</strong>.
+                    </p>
+                    <p>
+                        Through my research, I bridge the gap between abstract algorithmic modeling and practical application development. I design hybrid search algorithms, metaheuristics, and interactive decision support systems that help operations managers visualize optimization curves and parameters in real time.
+                    </p>
+                    
+                    <div class="about-highlight-box">
+                        <h3>Core Philosophy</h3>
+                        <p>
+                            Optimization isn't just about finding the theoretical optimum; it's about engineering robust solvers that can adapt to changing real-world constraints while keeping computational complexity scaling linearly.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="about-profile">
+                    <div class="profile-img-wrapper">
+                        <div class="profile-placeholder">
+                            UKT
+                            <span>Operational Research</span>
+                        </div>
+                    </div>
+                    <div class="profile-decorator"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2>Featured Projects</h2>
+                <p>Explore some of the technical optimization implementations I have designed and engineered.</p>
+            </div>
+            
+            <div class="project-grid">
+                <!-- Featured Project Card -->
+                <div class="project-card">
+                    <!-- Project Visual Mockup / SVG Representation of Solver -->
+                    <div class="project-visual">
+                        <svg class="visual-diagram" viewBox="0 0 350 250" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Outer Card Box styling inside SVG -->
+                            <rect x="10" y="10" width="330" height="230" rx="10" fill="rgba(15, 34, 63, 0.4)" stroke="rgba(100, 255, 218, 0.15)" stroke-width="1.5"></rect>
+                            
+                            <!-- Graph representation -->
+                            <!-- Axis lines -->
+                            <line x1="40" y1="40" x2="40" y2="210" stroke="#64748b" stroke-width="1"></line>
+                            <line x1="40" y1="210" x2="310" y2="210" stroke="#64748b" stroke-width="1"></line>
+                            
+                            <!-- Convergence Curve -->
+                            <path d="M 40,60 Q 80,180 140,195 T 310,205" fill="none" stroke="#64ffda" stroke-width="2.5" stroke-dasharray="400" stroke-dashoffset="400" style="animation: drawCurve 4s ease-out infinite;"></path>
+                            
+                            <!-- Heuristic Points (Local Optima) -->
+                            <circle cx="80" cy="180" r="3" fill="#ff9f00"></circle>
+                            <circle cx="140" cy="195" r="3" fill="#ff9f00"></circle>
+                            <circle cx="310" cy="205" r="3.5" fill="#00ff88"></circle>
+                            
+                            <!-- Curve Labels -->
+                            <text x="300" y="195" fill="#00ff88" font-family="'Space Grotesk'" font-size="9" text-anchor="end">Global Optimum Reached</text>
+                            <text x="85" y="175" fill="#ff9f00" font-family="'Space Grotesk'" font-size="8">Local Optima Escaped</text>
+                            
+                            <text x="35" y="30" fill="#94a3b8" font-family="'Space Grotesk'" font-size="8" text-anchor="start">Objective Value (Cost)</text>
+                            <text x="310" y="222" fill="#94a3b8" font-family="'Space Grotesk'" font-size="8" text-anchor="end">Iterations</text>
+                        </svg>
+                        
+                        <style>
+                            @keyframes drawCurve {
+                                from {
+                                    stroke-dashoffset: 400;
+                                }
+                                to {
+                                    stroke-dashoffset: 0;
+                                }
+                            }
+                        </style>
+                    </div>
+                    
+                    <!-- Project Details -->
+                    <div class="project-details">
+                        <div class="project-badge-container">
+                            <span class="tech-badge">Python</span>
+                            <span class="tech-badge">Genetic Algorithm</span>
+                            <span class="tech-badge">Optimization</span>
+                        </div>
+                        
+                        <h3 class="project-title">TSP Cost Optimization using QIGWO</h3>
+                        
+                        <p class="project-description">
+                            A highly optimized metaheuristic engine resolving the Travelling Salesperson Problem (TSP). By hybridizing the **Queen-Influence Genetic Algorithm** with **Grey Wolf Optimization (QIGWO)**, this implementation guarantees fast escape from local optima and convergence.
+                        </p>
+                        
+                        <!-- Cost Reduction Stat Callout -->
+                        <div class="stat-callout">
+                            <div class="stat-value">20%</div>
+                            <div class="stat-label">Average Route Cost Reduction</div>
+                        </div>
+                        
+                        <div>
+                            <button id="view-demo-btn" class="btn btn-primary">
+                                View Live Demo
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 2px;">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="container">
+            <div class="section-header">
+                <h2>Technical Skillset</h2>
+                <p>Proficiencies in mathematical programming, software tooling, and analysis packages.</p>
+            </div>
+            
+            <div class="skills-grid">
+                <div class="skills-intro">
+                    <p>
+                        My training in Operational Research bridges computational software engineering and statistical decision models. 
+                    </p>
+                    <p>
+                        I work across Python optimization frameworks (such as PuLP, SciPy, or custom metaheuristics) and enterprise analytical dashboard integrations like Power BI and SQL, providing end-to-end analytical architectures.
+                    </p>
+                    
+                    <div class="about-highlight-box" style="margin-top: 2rem;">
+                        <h3 style="color: var(--text-primary); font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: var(--color-teal);">&#9670;</span> Specializations
+                        </h3>
+                        <p style="font-size: 0.95rem; line-height: 1.5; margin-top: 0.5rem; color: var(--text-secondary);">
+                            Metaheuristics (GA, GWO, SA), Mixed-Integer Linear Programming (MILP), Route/Logistics Clustering, Predictive Modeling.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="skills-bars" id="skills-container">
+                    <!-- Python -->
+                    <div class="skill-item">
+                        <div class="skill-info">
+                            <span class="skill-name">Python</span>
+                            <span class="skill-percentage">85%</span>
+                        </div>
+                        <div class="skill-progress-bg">
+                            <div class="skill-progress-bar" data-target="85%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- SQL -->
+                    <div class="skill-item">
+                        <div class="skill-info">
+                            <span class="skill-name">SQL</span>
+                            <span class="skill-percentage">75%</span>
+                        </div>
+                        <div class="skill-progress-bg">
+                            <div class="skill-progress-bar" data-target="75%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Power BI -->
+                    <div class="skill-item">
+                        <div class="skill-info">
+                            <span class="skill-name">Power BI</span>
+                            <span class="skill-percentage">80%</span>
+                        </div>
+                        <div class="skill-progress-bg">
+                            <div class="skill-progress-bar" data-target="80%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Machine Learning -->
+                    <div class="skill-item">
+                        <div class="skill-info">
+                            <span class="skill-name">Machine Learning</span>
+                            <span class="skill-percentage">80%</span>
+                        </div>
+                        <div class="skill-progress-bg">
+                            <div class="skill-progress-bar" data-target="80%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Excel -->
+                    <div class="skill-item">
+                        <div class="skill-info">
+                            <span class="skill-name">Excel</span>
+                            <span class="skill-percentage">90%</span>
+                        </div>
+                        <div class="skill-progress-bg">
+                            <div class="skill-progress-bar" data-target="90%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <div class="contact-content">
+                <h2 class="contact-title">Let's Connect</h2>
+                <p class="contact-desc">
+                    I am actively seeking roles in Operational Research, Data Analytics, and Data Science. If you would like to discuss potential opportunities or view more solver details, get in touch!
+                </p>
+                
+                <div class="contact-links">
+                    <!-- LinkedIn -->
+                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="contact-btn" data-label="LinkedIn" aria-label="LinkedIn Profile">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                        </svg>
+                    </a>
+                    
+                    <!-- Gmail -->
+                    <a href="mailto:utsav.thakur@example.com" class="contact-btn" data-label="Gmail" aria-label="Send Email">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 4H2C.9 4 0 4.9 0 6v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM20 8l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Utsav Kumar Thakur. Designed & Engineered using custom HTML &amp; CSS. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Interactive Dashboard Modal -->
+    <div class="modal-overlay" id="dashboard-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    QIGWO Dashboard
+                    <span>Interactive Solver Sandbox</span>
+                </h3>
+                <button class="modal-close" id="close-modal-btn" aria-label="Close Modal">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-loader" id="modal-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading Optimization Sandbox...</p>
+                </div>
+                <!-- Iframe source will load on-demand dynamically -->
+                <iframe class="modal-iframe" id="dashboard-iframe" title="QIGWO TSP Solver Dashboard"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript logic -->
+    <script>
+        // 1. Mobile Menu Toggle logic
+        const mobileToggleBtn = document.getElementById('mobile-menu-toggle');
+        const navLinksMenu = document.getElementById('nav-links-menu');
+        const navLinks = document.querySelectorAll('.nav-link-item');
+
+        mobileToggleBtn.addEventListener('click', () => {
+            navLinksMenu.classList.toggle('active');
+            mobileToggleBtn.classList.toggle('active');
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navLinksMenu.classList.remove('active');
+                mobileToggleBtn.classList.remove('active');
+            });
+        });
+
+        // 2. Navbar shrink effect on scroll
+        const navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // 3. Section Navigation Highlight Active Link
+        const sections = document.querySelectorAll('section');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // 4. Skills progress bar animation intersection observer
+        const skillsSection = document.getElementById('skills');
+        const progressBars = document.querySelectorAll('.skill-progress-bar');
+
+        const skillsObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    progressBars.forEach(bar => {
+                        const targetVal = bar.getAttribute('data-target');
+                        bar.style.width = targetVal;
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        skillsObserver.observe(skillsSection);
+
+        // 5. Dashboard Modal logic
+        const viewDemoBtn = document.getElementById('view-demo-btn');
+        const dashboardModal = document.getElementById('dashboard-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const dashboardIframe = document.getElementById('dashboard-iframe');
+        const modalSpinner = document.getElementById('modal-spinner');
+
+        viewDemoBtn.addEventListener('click', () => {
+            // Display modal first
+            dashboardModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Stop background scrolling
+
+            // Set source dynamically if not already loaded
+            if (!dashboardIframe.src) {
+                // Ensure to load dashboard.html relative path
+                dashboardIframe.src = 'dashboard.html';
+                
+                dashboardIframe.addEventListener('load', () => {
+                    modalSpinner.style.display = 'none';
+                    dashboardIframe.classList.add('loaded');
+                });
+            } else {
+                modalSpinner.style.display = 'none';
+                dashboardIframe.classList.add('loaded');
+            }
+        });
+
+        const closeModal = () => {
+            dashboardModal.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scroll
+        };
+
+        closeModalBtn.addEventListener('click', closeModal);
+        
+        // Close modal clicking outside the container
+        dashboardModal.addEventListener('click', (e) => {
+            if (e.target === dashboardModal) {
+                closeModal();
+            }
+        });
+
+        // Listen for message from dashboard.html inside the iframe to close the modal
+        window.addEventListener('message', (e) => {
+            if (e.data === 'closeModal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

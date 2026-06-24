@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSP Optimizer | QIGWO Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js UMD version from cdnjs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <style>
+        :root {
+            --bg-primary: #070614;
+            --bg-secondary: #0d0b24;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #120d2d 0%, #060512 100%);
+            --card-bg: rgba(16, 12, 38, 0.65);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-border-active: rgba(0, 229, 255, 0.3);
+            
+            --text-primary: #ffffff;
+            --text-secondary: #8c8aa0;
+            --text-muted: #535166;
+            
+            --color-accent: #00e5ff;
+            --color-accent-rgb: 0, 229, 255;
+            --color-purple: #b500ff;
+            --color-purple-rgb: 181, 0, 255;
+            --color-green: #00ff88;
+            --color-green-rgb: 0, 255, 136;
+            --color-orange: #ff9f00;
+            
+            --shadow-glow: 0 0 20px rgba(0, 229, 255, 0.2);
+            --shadow-glow-green: 0 0 20px rgba(0, 255, 136, 0.25);
+            --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            
+            --font-main: 'Outfit', sans-serif;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-accent);
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Hero Header */
+        header {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-purple), var(--color-accent), var(--color-green));
+        }
+
+        .header-title-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title-container h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 30%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title-container p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-top: 0.2rem;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: var(--transition-smooth);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-accent);
+            box-shadow: 0 0 10px var(--color-accent);
+        }
+
+        /* Animated status colors */
+        .status-badge.idle {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .status-badge.idle .status-dot {
+            background-color: var(--text-secondary);
+            box-shadow: none;
+            animation: none;
+        }
+
+        .status-badge.running {
+            border-color: var(--color-accent-glow);
+            color: var(--color-accent);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.05);
+        }
+        .status-badge.running .status-dot {
+            background-color: var(--color-accent);
+            animation: pulse-glow 1.5s infinite;
+        }
+
+        .status-badge.complete {
+            border-color: rgba(0, 255, 136, 0.3);
+            color: var(--color-green);
+        }
+        .status-badge.complete .status-dot {
+            background-color: var(--color-green);
+            box-shadow: 0 0 10px var(--color-green);
+            animation: none;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(0.9);
+                box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.7);
+            }
+            70% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 8px rgba(0, 229, 255, 0);
+            }
+            100% {
+                transform: scale(0.9);
+                box-shadow: 0 0 0 0 rgba(0, 229, 255, 0);
+            }
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr 400px;
+            gap: 1.5rem;
+            align-items: stretch;
+            flex-grow: 1;
+        }
+
+        /* Cards Style */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            transition: var(--transition-smooth);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.2px;
+        }
+
+        /* Control Panel elements */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .control-value {
+            color: var(--color-accent);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            box-shadow: 0 0 10px var(--color-accent);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-accent) 0%, #0099ff 100%);
+            color: #000;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            box-shadow: var(--shadow-glow);
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Metrics Card Section */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            transition: var(--transition-smooth);
+        }
+
+        .metric-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-feature-settings: "tnum" 1;
+        }
+
+        .metric-value.accent {
+            color: var(--color-accent);
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+        }
+
+        .metric-value.green {
+            color: var(--color-green);
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        /* City Map Center Panel */
+        .map-card {
+            grid-column: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .canvas-container {
+            width: 100%;
+            flex-grow: 1;
+            position: relative;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        canvas {
+            display: block;
+            background: transparent;
+            cursor: default;
+        }
+
+        .canvas-tooltip {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 8, 25, 0.85);
+            border: 1px solid var(--card-border);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+
+        /* Right Panel Cards */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        /* Route Table */
+        .table-container {
+            flex-grow: 1;
+            max-height: 220px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            backdrop-filter: blur(5px);
+        }
+
+        td {
+            padding: 0.5rem 0.8rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-feature-settings: "tnum" 1;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .city-tag {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 50%;
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--color-accent);
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-right: 0.4rem;
+        }
+
+        /* Footer info */
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* Media Queries for Responsive Layout */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 340px 1fr;
+            }
+            .right-panel {
+                grid-column: 1 / -1;
+                flex-direction: row;
+            }
+            .right-panel > div {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .map-card {
+                grid-column: 1;
+            }
+            .right-panel {
+                flex-direction: column;
+            }
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+
+        /* Floating Back to Portfolio Button */
+        .back-portfolio-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--bg-secondary);
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 10px 25px -10px rgba(0, 229, 255, 0.4);
+            transition: var(--transition-smooth);
+        }
+
+        .back-portfolio-btn:hover {
+            background-color: var(--color-accent);
+            color: var(--bg-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(0, 229, 255, 0.6);
+        }
+
+        .back-portfolio-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            transition: var(--transition-smooth);
+        }
+
+        .back-portfolio-btn:hover svg {
+            transform: translateX(-3px);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Hero Header -->
+        <header>
+            <div class="header-title-container">
+                <h1>TSP Optimizer | QIGWO</h1>
+                <p>Quantum-Inspired Grey Wolf Optimizer for Travelling Salesman Problem</p>
+            </div>
+            <div id="statusBadge" class="status-badge idle">
+                <div class="status-dot"></div>
+                <span id="statusText">Idle</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Left Panel: Controls and Metrics -->
+            <div class="glass-card" style="grid-column: 1;">
+                <div class="card-header">
+                    <h2>Control Panel</h2>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Population Size</span>
+                        <span id="popSizeVal" class="control-value">50</span>
+                    </div>
+                    <input type="range" id="popSizeSlider" min="10" max="100" value="50">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Max Iterations</span>
+                        <span id="maxIterVal" class="control-value">100</span>
+                    </div>
+                    <input type="range" id="maxIterSlider" min="50" max="500" step="10" value="100">
+                </div>
+
+                <button id="btnRun" class="btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Run Optimizer
+                </button>
+
+                <hr style="border: none; border-top: 1px solid var(--card-border); margin: 0.5rem 0;">
+
+                <div class="card-header">
+                    <h2>Solver Metrics</h2>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-label">Best Distance</span>
+                        <span id="metricDistance" class="metric-value accent">--</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Improvement %</span>
+                        <span id="metricImprovement" class="metric-value green">--</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Iterations</span>
+                        <span id="metricIterations" class="metric-value">--</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Execution Time</span>
+                        <span id="metricTime" class="metric-value">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Panel: City Map Canvas -->
+            <div class="glass-card map-card">
+                <div class="card-header">
+                    <h2>City Map</h2>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary);">Drag nodes to customize coordinates</span>
+                </div>
+                <div class="canvas-container" id="canvasContainer">
+                    <canvas id="mapCanvas"></canvas>
+                    <div class="canvas-tooltip" id="tooltip">Drag nodes to rearrange cities</div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Chart and Table -->
+            <div class="right-panel">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2>Convergence Chart</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="convergenceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="flex-grow: 1;">
+                    <div class="card-header">
+                        <h2>Optimal Tour Route</h2>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>City</th>
+                                    <th>Coord (X)</th>
+                                    <th>Coord (Y)</th>
+                                    <th>Leg Dist</th>
+                                </tr>
+                            </thead>
+                            <tbody id="routeTableBody">
+                                <!-- Populated dynamically -->
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">Run the optimizer to view route details.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            Quantum-Inspired Grey Wolf Optimizer Dashboard • No Backend Required • Pure Client-Side HTML/JS
+        </footer>
+    </div>
+
+    <!-- JS Logic -->
+    <script>
+        // ----------------------------------------------------
+        // 1. QUANTUM CIRCUIT SIMULATOR
+        // ----------------------------------------------------
+        class QuantumSimulator {
+            constructor(numQubits) {
+                this.numQubits = numQubits;
+                this.numStates = 1 << numQubits;
+                this.real = new Float64Array(this.numStates);
+                this.imag = new Float64Array(this.numStates);
+                this.real[0] = 1.0; // Init state to |00...00>
+            }
+
+            h(qubit) {
+                const size = this.numStates;
+                const mask = 1 << qubit;
+                const nextReal = new Float64Array(size);
+                const nextImag = new Float64Array(size);
+                const invSqrt2 = 1.0 / Math.sqrt(2.0);
+
+                for (let i = 0; i < size; i++) {
+                    if ((i & mask) === 0) {
+                        const i0 = i;
+                        const i1 = i | mask;
+                        nextReal[i0] = (this.real[i0] + this.real[i1]) * invSqrt2;
+                        nextImag[i0] = (this.imag[i0] + this.imag[i1]) * invSqrt2;
+                        nextReal[i1] = (this.real[i0] - this.real[i1]) * invSqrt2;
+                        nextImag[i1] = (this.imag[i0] - this.imag[i1]) * invSqrt2;
+                    }
+                }
+                this.real = nextReal;
+                this.imag = nextImag;
+            }
+
+            rz(theta, qubit) {
+                const size = this.numStates;
+                const mask = 1 << qubit;
+                const halfTheta = theta / 2.0;
+                const cos0 = Math.cos(-halfTheta);
+                const sin0 = Math.sin(-halfTheta);
+                const cos1 = Math.cos(halfTheta);
+                const sin1 = Math.sin(halfTheta);
+
+                for (let i = 0; i < size; i++) {
+                    const r = this.real[i];
+                    const img = this.imag[i];
+                    if ((i & mask) === 0) {
+                        this.real[i] = r * cos0 - img * sin0;
+                        this.imag[i] = r * sin0 + img * cos0;
+                    } else {
+                        this.real[i] = r * cos1 - img * sin1;
+                        this.imag[i] = r * sin1 + img * cos1;
+                    }
+                }
+            }
+
+            cx(control, target) {
+                const size = this.numStates;
+                const ctrlMask = 1 << control;
+                const trgtMask = 1 << target;
+
+                for (let i = 0; i < size; i++) {
+                    if ((i & ctrlMask) !== 0 && (i & trgtMask) === 0) {
+                        const i0 = i;
+                        const i1 = i | trgtMask;
+                        const rTemp = this.real[i0];
+                        const iTemp = this.imag[i0];
+                        this.real[i0] = this.real[i1];
+                        this.imag[i0] = this.imag[i1];
+                        this.real[i1] = rTemp;
+                        this.imag[i1] = iTemp;
+                    }
+                }
+            }
+
+            getProbabilities() {
+                const probs = new Float64Array(this.numStates);
+                for (let i = 0; i < this.numStates; i++) {
+                    probs[i] = this.real[i] * this.real[i] + this.imag[i] * this.imag[i];
+                }
+                return probs;
+            }
+
+            run(shots = 1024) {
+                const probs = this.getProbabilities();
+                const cumProbs = new Float64Array(this.numStates);
+                let sum = 0;
+                for (let i = 0; i < this.numStates; i++) {
+                    sum += probs[i];
+                    cumProbs[i] = sum;
+                }
+
+                const counts = {};
+                for (let s = 0; s < shots; s++) {
+                    const r = Math.random() * sum;
+                    let low = 0;
+                    let high = this.numStates - 1;
+                    let idx = high;
+                    while (low <= high) {
+                        const mid = (low + high) >> 1;
+                        if (cumProbs[mid] >= r) {
+                            idx = mid;
+                            high = mid - 1;
+                        } else {
+                            low = mid + 1;
+                        }
+                    }
+                    
+                    let binaryStr = "";
+                    for (let q = this.numQubits - 1; q >= 0; q--) {
+                        binaryStr += ((idx >> q) & 1).toString();
+                    }
+                    counts[binaryStr] = (counts[binaryStr] || 0) + 1;
+                }
+                return counts;
+            }
+        }
+
+        // ----------------------------------------------------
+        // 2. QIGWO OPTIMIZER FOR TSP
+        // ----------------------------------------------------
+        class QIGWO {
+            constructor(populationSize, maxIterations, cities) {
+                this.populationSize = populationSize;
+                this.maxIterations = maxIterations;
+                this.cities = cities;
+                this.nCities = cities.length;
+
+                this.wolves = [];
+                for (let i = 0; i < populationSize; i++) {
+                    this.wolves.push(this.getRandomPermutation());
+                }
+
+                this.alpha = [...this.wolves[0]];
+                this.beta = null;
+                this.delta = null;
+
+                this.alphaScore = Infinity;
+                this.betaScore = Infinity;
+                this.deltaScore = Infinity;
+
+                this.currentIteration = 0;
+            }
+
+            getRandomPermutation() {
+                const arr = Array.from({ length: this.nCities }, (_, i) => i);
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            calculateDistance(tour) {
+                let dist = 0;
+                for (let i = 0; i < tour.length; i++) {
+                    const c1 = this.cities[tour[i]];
+                    const c2 = this.cities[tour[(i + 1) % tour.length]];
+                    const dx = c1.x - c2.x;
+                    const dy = c1.y - c2.y;
+                    dist += Math.sqrt(dx * dx + dy * dy);
+                }
+                return dist;
+            }
+
+            step() {
+                if (this.currentIteration >= this.maxIterations) {
+                    return false;
+                }
+
+                // 1. Evaluate wolves
+                for (let i = 0; i < this.populationSize; i++) {
+                    const wolf = this.wolves[i];
+                    const score = this.quantumEvaluation(wolf);
+                    this.updateLeaders(wolf, score);
+                }
+
+                // 2. Update positions
+                const a = 2.0 - this.currentIteration * (2.0 / this.maxIterations);
+                for (let i = 0; i < this.populationSize; i++) {
+                    this.updateWolfPosition(i, a);
+                }
+
+                this.currentIteration++;
+                return true;
+            }
+
+            updateLeaders(wolf, score) {
+                if (score < this.alphaScore) {
+                    this.deltaScore = this.betaScore;
+                    this.delta = this.beta ? [...this.beta] : null;
+                    this.betaScore = this.alphaScore;
+                    this.beta = this.alpha ? [...this.alpha] : null;
+                    this.alphaScore = score;
+                    this.alpha = [...wolf];
+                } else if (score < this.betaScore) {
+                    this.deltaScore = this.betaScore;
+                    this.delta = this.beta ? [...this.beta] : null;
+                    this.betaScore = score;
+                    this.beta = [...wolf];
+                } else if (score < this.deltaScore) {
+                    this.deltaScore = score;
+                    this.delta = [...wolf];
+                }
+            }
+
+            updateWolfPosition(index, a) {
+                const wolf = this.wolves[index];
+                for (let j = 0; j < this.nCities; j++) {
+                    const r1_1 = Math.random();
+                    const r2_1 = Math.random();
+                    const A1 = 2 * a * r1_1 - a;
+                    const C1 = 2 * r2_1;
+                    const D_alpha = Math.abs(C1 * this.alpha[j] - wolf[j]);
+                    const X1 = this.alpha[j] - A1 * D_alpha;
+
+                    const r1_2 = Math.random();
+                    const r2_2 = Math.random();
+                    const A2 = 2 * a * r1_2 - a;
+                    const C2 = 2 * r2_2;
+                    const D_beta = this.beta ? Math.abs(C2 * this.beta[j] - wolf[j]) : D_alpha;
+                    const X2 = this.beta ? this.beta[j] - A2 * D_beta : X1;
+
+                    const r1_3 = Math.random();
+                    const r2_3 = Math.random();
+                    const A3 = 2 * a * r1_3 - a;
+                    const C3 = 2 * r2_3;
+                    const D_delta = this.delta ? Math.abs(C3 * this.delta[j] - wolf[j]) : D_alpha;
+                    const X3 = this.delta ? this.delta[j] - A3 * D_delta : X1;
+
+                    wolf[j] = (X1 + X2 + X3) / 3;
+                }
+                this.wolves[index] = this.ensureValidPermutation(wolf);
+            }
+
+            ensureValidPermutation(wolf) {
+                let rounded = wolf.map(val => Math.max(0, Math.min(this.nCities - 1, Math.round(val))));
+                const unique = [];
+                const seen = new Set();
+                for (const val of rounded) {
+                    if (!seen.has(val)) {
+                        seen.add(val);
+                        unique.push(val);
+                    }
+                }
+                if (unique.length < this.nCities) {
+                    const missing = [];
+                    for (let i = 0; i < this.nCities; i++) {
+                        if (!seen.has(i)) {
+                            missing.push(i);
+                        }
+                    }
+                    for (let i = missing.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [missing[i], missing[j]] = [missing[j], missing[i]];
+                    }
+                    return unique.concat(missing);
+                }
+                return unique.slice(0, this.nCities);
+            }
+
+            quantumEvaluation(wolf) {
+                const simulator = new QuantumSimulator(this.nCities);
+                for (let i = 0; i < this.nCities; i++) {
+                    simulator.h(i);
+                    simulator.rz((2 * Math.PI * wolf[i]) / this.nCities, i);
+                }
+                for (let i = 0; i < this.nCities - 1; i++) {
+                    simulator.cx(i, i + 1);
+                }
+                const counts = simulator.run(1024);
+                return this.calculateExpectedCost(counts);
+            }
+
+            calculateExpectedCost(counts) {
+                let totalCounts = 0;
+                for (const val of Object.values(counts)) {
+                    totalCounts += val;
+                }
+
+                let expectedCost = 0;
+                for (const [outcome, count] of Object.entries(counts)) {
+                    const padded = outcome.padStart(40, '0');
+                    const tour = [];
+                    for (let i = 0; i < 40; i += 4) {
+                        const chunk = padded.substring(i, i + 4);
+                        tour.push(parseInt(chunk, 2) % this.nCities);
+                    }
+                    const cost = this.calculateDistance(tour);
+                    const probability = count / totalCounts;
+                    expectedCost += probability * cost;
+                }
+                return expectedCost;
+            }
+        }
+
+        // ----------------------------------------------------
+        // 3. UI HANDLERS AND RENDER LOGIC
+        // ----------------------------------------------------
+        
+        // Initial coordinates (10 cities)
+        const initialX = [0.554, 0.376, 0.052, 0.049, 0.575, 0.845, 0.917, 0.063, 0.709, 0.325];
+        const initialY = [0.181, 0.519, 0.767, 0.820, 0.835, 0.179, 0.939, 0.831, 0.257, 0.573];
+        
+        let cities = [];
+        for(let i=0; i<10; i++) {
+            cities.push({
+                id: i,
+                x: initialX[i],
+                y: initialY[i],
+                label: String.fromCharCode(65 + i) // A, B, C...
+            });
+        }
+
+        // DOM elements
+        const popSizeSlider = document.getElementById("popSizeSlider");
+        const popSizeVal = document.getElementById("popSizeVal");
+        const maxIterSlider = document.getElementById("maxIterSlider");
+        const maxIterVal = document.getElementById("maxIterVal");
+        const btnRun = document.getElementById("btnRun");
+        const statusBadge = document.getElementById("statusBadge");
+        const statusText = document.getElementById("statusText");
+        
+        const metricDistance = document.getElementById("metricDistance");
+        const metricImprovement = document.getElementById("metricImprovement");
+        const metricIterations = document.getElementById("metricIterations");
+        const metricTime = document.getElementById("metricTime");
+        const routeTableBody = document.getElementById("routeTableBody");
+
+        const canvas = document.getElementById("mapCanvas");
+        const ctx = canvas.getContext("2d");
+        const container = document.getElementById("canvasContainer");
+
+        // Sync slider values
+        popSizeSlider.addEventListener("input", (e) => {
+            popSizeVal.textContent = e.target.value;
+        });
+        maxIterSlider.addEventListener("input", (e) => {
+            maxIterVal.textContent = e.target.value;
+        });
+
+        // Setup canvas size
+        const CANVAS_PADDING = 40;
+        function resizeCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            const size = Math.min(container.clientWidth, container.clientHeight, 600);
+            canvas.width = size * dpr;
+            canvas.height = size * dpr;
+            canvas.style.width = `${size}px`;
+            canvas.style.height = `${size}px`;
+            ctx.scale(dpr, dpr);
+            drawMap();
+        }
+        window.addEventListener("resize", resizeCanvas);
+
+        // Convert normalized coords (0-1) to canvas pixels (Cartesian coordinates)
+        function getPixelCoords(city) {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            const px = CANVAS_PADDING + city.x * (w - 2 * CANVAS_PADDING);
+            // Invert Y so 0 is at the bottom, matching Standard Cartesian
+            const py = CANVAS_PADDING + (1.0 - city.y) * (h - 2 * CANVAS_PADDING);
+            return { x: px, y: py };
+        }
+
+        // Draw Map canvas
+        let bestTour = Array.from({length: 10}, (_, i) => i);
+        let activeOptimizer = null;
+
+        function drawMap() {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.clearRect(0, 0, w, h);
+
+            // Draw route lines with glowing effect
+            if (bestTour && bestTour.length > 0) {
+                ctx.save();
+                ctx.strokeStyle = "rgba(0, 229, 255, 0.75)";
+                ctx.lineWidth = 3;
+                ctx.shadowColor = "rgba(0, 229, 255, 0.6)";
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                
+                const startPt = getPixelCoords(cities[bestTour[0]]);
+                ctx.moveTo(startPt.x, startPt.y);
+                
+                for (let i = 1; i < bestTour.length; i++) {
+                    const pt = getPixelCoords(cities[bestTour[i]]);
+                    ctx.lineTo(pt.x, pt.y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+                ctx.restore();
+
+                // Draw arrows showing path direction
+                for (let i = 0; i < bestTour.length; i++) {
+                    const pt1 = getPixelCoords(cities[bestTour[i]]);
+                    const pt2 = getPixelCoords(cities[bestTour[(i + 1) % bestTour.length]]);
+                    drawArrow(pt1.x, pt1.y, pt2.x, pt2.y);
+                }
+            }
+
+            // Draw City nodes
+            cities.forEach(city => {
+                const pt = getPixelCoords(city);
+                
+                // Outer glow
+                ctx.save();
+                const isHovered = hoveredCity === city;
+                const isDragged = draggedCity === city;
+                
+                ctx.fillStyle = isDragged ? "#00ff88" : (isHovered ? "#00e5ff" : "#b500ff");
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.shadowBlur = (isHovered || isDragged) ? 15 : 8;
+                
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, isHovered || isDragged ? 9 : 7, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                // Node border
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, isHovered || isDragged ? 9 : 7, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Node Label
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 11px 'Outfit'";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(city.label, pt.x, pt.y - 18);
+            });
+        }
+
+        // Draw arrow in the middle of a line segment
+        function drawArrow(x1, y1, x2, y2) {
+            const mx = (x1 + x2) / 2;
+            const my = (y1 + y2) / 2;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            
+            ctx.save();
+            ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+            ctx.shadowColor = "rgba(0, 229, 255, 0.5)";
+            ctx.shadowBlur = 4;
+            ctx.translate(mx, my);
+            ctx.rotate(angle);
+            
+            ctx.beginPath();
+            ctx.moveTo(-6, -4);
+            ctx.lineTo(4, 0);
+            ctx.lineTo(-6, 4);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // City Drag and Drop Handlers
+        let draggedCity = null;
+        let hoveredCity = null;
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function findCityAtPosition(mx, my) {
+            const hitRadius = 15;
+            for (const city of cities) {
+                const pt = getPixelCoords(city);
+                const dx = pt.x - mx;
+                const dy = pt.y - my;
+                if (Math.sqrt(dx * dx + dy * dy) < hitRadius) {
+                    return city;
+                }
+            }
+            return null;
+        }
+
+        // Mouse and Touch Events
+        function handleStart(e) {
+            if (activeOptimizer) return; // Disable during optimization
+            const pos = getMousePos(e);
+            draggedCity = findCityAtPosition(pos.x, pos.y);
+            if (draggedCity) {
+                e.preventDefault();
+                drawMap();
+            }
+        }
+
+        function handleMove(e) {
+            const pos = getMousePos(e);
+            
+            if (draggedCity) {
+                e.preventDefault();
+                const w = canvas.width / (window.devicePixelRatio || 1);
+                const h = canvas.height / (window.devicePixelRatio || 1);
+                
+                // Map screen coordinates back to normalized coordinates
+                let nx = (pos.x - CANVAS_PADDING) / (w - 2 * CANVAS_PADDING);
+                let ny = 1.0 - (pos.y - CANVAS_PADDING) / (h - 2 * CANVAS_PADDING);
+                
+                // Clamp coordinates to grid bounds
+                draggedCity.x = Math.max(0.01, Math.min(0.99, nx));
+                draggedCity.y = Math.max(0.01, Math.min(0.99, ny));
+                
+                updateTourDistances();
+                drawMap();
+            } else if (!e.touches) {
+                const overCity = findCityAtPosition(pos.x, pos.y);
+                if (overCity !== hoveredCity) {
+                    hoveredCity = overCity;
+                    canvas.style.cursor = hoveredCity ? "pointer" : "default";
+                    drawMap();
+                }
+            }
+        }
+
+        function handleEnd() {
+            if (draggedCity) {
+                draggedCity = null;
+                calculateRandomBaseline();
+                updateMetrics();
+                drawMap();
+            }
+        }
+
+        canvas.addEventListener("mousedown", handleStart);
+        canvas.addEventListener("mousemove", handleMove);
+        window.addEventListener("mouseup", handleEnd);
+
+        canvas.addEventListener("touchstart", handleStart);
+        canvas.addEventListener("touchmove", handleMove, { passive: false });
+        window.addEventListener("touchend", handleEnd);
+
+        // Update Tour Distance / Baseline calculations
+        let baselineDistance = 3.5;
+        function updateTourDistances() {
+            if (activeOptimizer) return;
+            const dist = calculateTourDistance(bestTour);
+            metricDistance.textContent = dist.toFixed(4);
+            const imp = ((baselineDistance - dist) / baselineDistance) * 100;
+            metricImprovement.textContent = `${imp.toFixed(1)}%`;
+            updateRouteTable();
+        }
+
+        function calculateTourDistance(tour) {
+            let dist = 0;
+            for (let i = 0; i < tour.length; i++) {
+                const c1 = cities[tour[i]];
+                const c2 = cities[tour[(i + 1) % tour.length]];
+                const dx = c1.x - c2.x;
+                const dy = c1.y - c2.y;
+                dist += Math.sqrt(dx * dx + dy * dy);
+            }
+            return dist;
+        }
+
+        // Random Baseline generator
+        function calculateRandomBaseline() {
+            let total = 0;
+            const size = 1000;
+            const arr = Array.from({ length: 10 }, (_, i) => i);
+            for (let s = 0; s < size; s++) {
+                // Shuffle
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                total += calculateTourDistance(arr);
+            }
+            baselineDistance = total / size;
+        }
+
+        // Update Route Table display
+        function updateRouteTable() {
+            routeTableBody.innerHTML = "";
+            let accDist = 0;
+            
+            for (let i = 0; i < bestTour.length; i++) {
+                const c1 = cities[bestTour[i]];
+                const c2 = cities[bestTour[(i + 1) % bestTour.length]];
+                const dx = c1.x - c2.x;
+                const dy = c1.y - c2.y;
+                const legDist = Math.sqrt(dx * dx + dy * dy);
+                
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td><span class="city-tag">${c1.label}</span>City ${c1.id}</td>
+                    <td>${c1.x.toFixed(3)}</td>
+                    <td>${c1.y.toFixed(3)}</td>
+                    <td>${legDist.toFixed(3)}</td>
+                `;
+                routeTableBody.appendChild(tr);
+            }
+        }
+
+        // Update Dashboard statistics
+        function updateMetrics(timeTaken = null, done = false) {
+            const currentDist = calculateTourDistance(bestTour);
+            metricDistance.textContent = currentDist.toFixed(4);
+            
+            const imp = ((baselineDistance - currentDist) / baselineDistance) * 100;
+            metricImprovement.textContent = `${imp >= 0 ? '+' : ''}${imp.toFixed(1)}%`;
+            
+            if (activeOptimizer) {
+                metricIterations.textContent = `${activeOptimizer.currentIteration}/${activeOptimizer.maxIterations}`;
+            } else {
+                metricIterations.textContent = done ? maxIterSlider.value : "--";
+            }
+            
+            if (timeTaken !== null) {
+                metricTime.textContent = `${timeTaken.toFixed(0)} ms`;
+            } else {
+                metricTime.textContent = "--";
+            }
+        }
+
+        // ----------------------------------------------------
+        // 4. CHART.JS CONVERGENCE CHART
+        // ----------------------------------------------------
+        let convergenceChart;
+        function initChart() {
+            const ctxChart = document.getElementById("convergenceChart").getContext("2d");
+            
+            const gradient = ctxChart.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, "rgba(0, 229, 255, 0.4)");
+            gradient.addColorStop(1, "rgba(0, 229, 255, 0.0)");
+
+            convergenceChart = new Chart(ctxChart, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Best Distance',
+                        data: [],
+                        borderColor: '#00e5ff',
+                        borderWidth: 2,
+                        fill: true,
+                        backgroundColor: gradient,
+                        tension: 0.2,
+                        pointRadius: 0,
+                        pointHoverRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: '#0d0b24',
+                            titleColor: '#8c8aa0',
+                            bodyColor: '#ffffff',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                            ticks: { color: '#8c8aa0', font: { family: 'Outfit', size: 9 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                            ticks: { color: '#8c8aa0', font: { family: 'Outfit', size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart(iteration, value) {
+            convergenceChart.data.labels.push(iteration);
+            convergenceChart.data.datasets[0].data.push(value);
+            convergenceChart.update('none'); // Update without full animation for performance
+        }
+
+        function resetChart() {
+            convergenceChart.data.labels = [];
+            convergenceChart.data.datasets[0].data = [];
+            convergenceChart.update();
+        }
+
+        // ----------------------------------------------------
+        // 5. RUN SYSTEM & ASYNC SOLVER LOOP
+        // ----------------------------------------------------
+        let startTime = 0;
+        function runSolver() {
+            if (activeOptimizer) return; // Safety check
+
+            // Reset UI states
+            btnRun.disabled = true;
+            popSizeSlider.disabled = true;
+            maxIterSlider.disabled = true;
+            statusBadge.className = "status-badge running";
+            statusText.textContent = "Optimizing";
+            resetChart();
+
+            const popSize = parseInt(popSizeSlider.value);
+            const maxIter = parseInt(maxIterSlider.value);
+            
+            // Create a new instance of the QIGWO solver
+            activeOptimizer = new QIGWO(popSize, maxIter, cities);
+            startTime = performance.now();
+
+            function solverLoop() {
+                if (!activeOptimizer) return;
+
+                const hasMoreSteps = activeOptimizer.step();
+                
+                // Update best tour and metrics dynamically
+                bestTour = [...activeOptimizer.alpha];
+                drawMap();
+                
+                const currentBestDist = calculateTourDistance(bestTour);
+                updateChart(activeOptimizer.currentIteration, currentBestDist);
+                
+                const elapsed = performance.now() - startTime;
+                updateMetrics(elapsed);
+
+                if (hasMoreSteps) {
+                    requestAnimationFrame(solverLoop);
+                } else {
+                    // Optimizer Complete
+                    const totalTime = performance.now() - startTime;
+                    btnRun.disabled = false;
+                    popSizeSlider.disabled = false;
+                    maxIterSlider.disabled = false;
+                    statusBadge.className = "status-badge complete";
+                    statusText.textContent = "Complete";
+                    
+                    updateMetrics(totalTime, true);
+                    updateRouteTable();
+                    activeOptimizer = null;
+                }
+            }
+
+            requestAnimationFrame(solverLoop);
+        }
+
+        btnRun.addEventListener("click", runSolver);
+
+        // Initialize App on load
+        window.addEventListener("DOMContentLoaded", () => {
+            calculateRandomBaseline();
+            resizeCanvas();
+            initChart();
+            updateTourDistances();
+
+            // Handle Floating Back to Portfolio Button
+            const backBtn = document.getElementById('back-to-portfolio-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (window.self !== window.top) {
+                        // Inside an iframe, tell parent to close modal
+                        window.parent.postMessage('closeModal', '*');
+                    } else {
+                        // Standalone page, navigate back. Handles root-relative origin subfolders robustly.
+                        const path = window.location.pathname;
+                        const baseDirIndex = path.lastIndexOf('/dashboard');
+                        if (baseDirIndex !== -1) {
+                            window.location.href = window.location.origin + path.substring(0, baseDirIndex) + '/index.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Floating Back to Portfolio Button -->
+    <a href="../index.html" class="back-portfolio-btn" id="back-to-portfolio-btn">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+        Back to Portfolio
+    </a>
+</body>
+</html>
