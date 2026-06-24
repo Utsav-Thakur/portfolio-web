@@ -7,17 +7,20 @@ const projects = [
   {
     title: 'Data-Driven Cost Optimization and Decision Analytics',
     category: 'Optimization & Analytics',
-    description: 'Analysed 200+ scenarios and applied optimization techniques to improve resource allocation. Delivered a 20% performance improvement through data-driven models using Python.'
+    description: 'Analysed 200+ scenarios and applied optimization techniques to improve resource allocation. Delivered a 20% performance improvement through data-driven models using Python.',
+    link: 'https://github.com/Utsav-Thakur/TSP'
   },
   {
     title: 'Credit Risk Analysis & Financial Decision Support',
     category: 'Machine Learning',
-    description: 'Developed and optimized machine learning models for risk patterns. Achieved ROC-AUC > 0.85 through advanced feature engineering and model tuning.'
+    description: 'Developed and optimized machine learning models for risk patterns. Achieved ROC-AUC > 0.85 through advanced feature engineering and model tuning.',
+    link: '#'
   },
   {
     title: 'Predictive Analytics and Forecasting for Business',
     category: 'Predictive Modeling',
-    description: 'Designed predictive models using macroeconomic indicators. Reduced forecasting error by 18%, enabling reliable planning and data-driven decisions.'
+    description: 'Designed predictive models using macroeconomic indicators. Reduced forecasting error by 18%, enabling reliable planning and data-driven decisions.',
+    link: '#'
   }
 ];
 
@@ -40,13 +43,16 @@ export default function Projects() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {projects.map((project, idx) => (
-            <motion.div
+            <motion.a
               key={idx}
+              href={project.link}
+              target={project.link !== '#' ? "_blank" : undefined}
+              rel={project.link !== '#' ? "noopener noreferrer" : undefined}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
-              className="group relative rounded-3xl p-8 overflow-hidden backdrop-blur-md bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.05)] cursor-pointer"
+              className="group relative block rounded-3xl p-8 overflow-hidden backdrop-blur-md bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.05)] cursor-pointer no-underline hover:no-underline"
             >
               {/* Subtle hover glow effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -70,7 +76,7 @@ export default function Projects() {
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </motion.a>
           ))}
         </div>
       </div>
