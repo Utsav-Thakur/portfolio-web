@@ -22,9 +22,6 @@ export default function ScrollOverlay({ scrollYProgress }: { scrollYProgress: Mo
         style={{ opacity: opacity1, y: y1 }}
         className="absolute inset-0 flex flex-col items-center justify-center text-center"
       >
-        <p className="text-xl md:text-3xl font-light tracking-wide text-gray-300 drop-shadow-md">
-          Data Analytics & Machine Learning.
-        </p>
       </motion.div>
 
       {/* Section 2 */}

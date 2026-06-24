@@ -100,10 +100,13 @@ export default function ScrollyCanvas() {
       }
     };
 
-    // Update canvas size to match window
+    // Update canvas size to match window in HD (High-DPI / Retina support)
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
       render();
     };
 
