@@ -8,19 +8,22 @@ const projects = [
     title: 'Data-Driven Cost Optimization and Decision Analytics',
     category: 'Optimization & Analytics',
     description: 'Analysed 200+ scenarios and applied optimization techniques to improve resource allocation. Delivered a 20% performance improvement through data-driven models using Python.',
-    link: 'https://github.com/Utsav-Thakur/TSP'
+    demoLink: 'https://utsav-thakur-tsp.vercel.app',
+    codeLink: 'https://github.com/Utsav-Thakur/TSP'
   },
   {
     title: 'Credit Risk Analysis & Financial Decision Support',
     category: 'Machine Learning',
     description: 'Developed and optimized machine learning models for risk patterns. Achieved ROC-AUC > 0.85 through advanced feature engineering and model tuning.',
-    link: '#'
+    demoLink: '#',
+    codeLink: '#'
   },
   {
     title: 'Predictive Analytics and Forecasting for Business',
     category: 'Predictive Modeling',
     description: 'Designed predictive models using macroeconomic indicators. Reduced forecasting error by 18%, enabling reliable planning and data-driven decisions.',
-    link: '#'
+    demoLink: '#',
+    codeLink: '#'
   }
 ];
 
@@ -43,16 +46,13 @@ export default function Projects() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {projects.map((project, idx) => (
-            <motion.a
+            <motion.div
               key={idx}
-              href={project.link}
-              target={project.link !== '#' ? "_blank" : undefined}
-              rel={project.link !== '#' ? "noopener noreferrer" : undefined}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
-              className="group relative block rounded-3xl p-8 overflow-hidden backdrop-blur-md bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.05)] cursor-pointer no-underline hover:no-underline"
+              className="group relative block rounded-3xl p-8 overflow-hidden backdrop-blur-md bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.05)]"
             >
               {/* Subtle hover glow effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -62,9 +62,21 @@ export default function Projects() {
                   <span className="text-sm font-mono text-gray-400 border border-white/10 px-3 py-1 rounded-full">
                     {project.category}
                   </span>
-                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-colors duration-300">
-                    <ArrowUpRight className="w-6 h-6" />
-                  </div>
+                  
+                  {project.demoLink && project.demoLink !== '#' ? (
+                    <a 
+                      href={project.demoLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center hover:bg-white hover:text-black text-white transition-colors duration-300"
+                    >
+                      <ArrowUpRight className="w-6 h-6" />
+                    </a>
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                      <ArrowUpRight className="w-6 h-6" />
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -74,9 +86,37 @@ export default function Projects() {
                   <p className="text-gray-400 mb-6 line-clamp-2">
                     {project.description}
                   </p>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex gap-4 mt-6 relative z-20">
+                    {project.demoLink && project.demoLink !== '#' && (
+                      <a 
+                        href={project.demoLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white rounded-full text-sm font-semibold transition-all hover:scale-105 shadow-md"
+                      >
+                        Live Demo
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    {project.codeLink && project.codeLink !== '#' && (
+                      <a 
+                        href={project.codeLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-full text-sm font-semibold transition-all hover:scale-105"
+                      >
+                        View Code
+                        <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                        </svg>
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
-            </motion.a>
+            </motion.div>
           ))}
         </div>
       </div>
