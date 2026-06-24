@@ -9,7 +9,8 @@ const projects = [
     category: 'Optimization & Analytics',
     description: 'Analysed 200+ scenarios and applied optimization techniques to improve resource allocation. Delivered a 20% performance improvement through data-driven models using Python.',
     demoLink: '/tsp/index.html',
-    codeLink: 'https://github.com/Utsav-Thakur/TSP'
+    codeLink: 'https://github.com/Utsav-Thakur/TSP',
+    showGraph: true
   },
   {
     title: 'Credit Risk Analysis & Financial Decision Support',
@@ -86,6 +87,48 @@ export default function Projects() {
                   <p className="text-gray-400 mb-6 line-clamp-2">
                     {project.description}
                   </p>
+
+                  {/* Render Visual Graph if showGraph is true */}
+                  {project.showGraph && (
+                    <div className="my-6 p-4 rounded-2xl bg-white/5 border border-white/10 overflow-hidden relative">
+                      <svg className="w-full h-auto max-h-[160px]" viewBox="0 0 350 200" xmlns="http://www.w3.org/2000/svg">
+                        {/* Graph Axis lines */}
+                        <line x1="40" y1="20" x2="40" y2="160" stroke="#64748b" strokeWidth="1" strokeOpacity="0.4"></line>
+                        <line x1="40" y1="160" x2="310" y2="160" stroke="#64748b" strokeWidth="1" strokeOpacity="0.4"></line>
+                        
+                        {/* Convergence Curve path */}
+                        <path 
+                          d="M 40,30 Q 80,130 140,145 T 310,152" 
+                          fill="none" 
+                          stroke="#64ffda" 
+                          strokeWidth="2.5" 
+                          strokeDasharray="400" 
+                          strokeDashoffset="400"
+                          style={{
+                            animation: 'drawCurve 3s ease-out forwards infinite'
+                          }}
+                        />
+                        
+                        {/* Local Optima Points */}
+                        <circle cx="80" cy="130" r="3" fill="#fbbf24"></circle>
+                        <circle cx="140" cy="145" r="3" fill="#fbbf24"></circle>
+                        <circle cx="310" cy="152" r="3.5" fill="#00ff88"></circle>
+                        
+                        {/* Labels */}
+                        <text x="300" y="142" fill="#00ff88" fontFamily="sans-serif" fontSize="8" textAnchor="end" fontWeight="500">Optimum Reached</text>
+                        <text x="85" y="125" fill="#fbbf24" fontFamily="sans-serif" fontSize="7">Local Optima Escaped</text>
+                        
+                        <text x="35" y="15" fill="#94a3b8" fontFamily="sans-serif" fontSize="7" textAnchor="start">Objective Value (Cost)</text>
+                        <text x="310" y="172" fill="#94a3b8" fontFamily="sans-serif" fontSize="7" textAnchor="end">Iterations</text>
+                      </svg>
+                      <style dangerouslySetInnerHTML={{__html: `
+                        @keyframes drawCurve {
+                          from { stroke-dashoffset: 400; }
+                          to { stroke-dashoffset: 0; }
+                        }
+                      `}} />
+                    </div>
+                  )}
                   
                   {/* Action Buttons */}
                   <div className="flex gap-4 mt-6 relative z-20">
