@@ -1,7 +1,181 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
+
+function InteractiveGraph() {
+  const [hoverData, setHoverData] = useState<{ x: number; y: number; iteration: number; cost: number } | null>(null);
+  const [autoplayIteration, setAutoplayIteration] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  // Autoplay simulation loop when not hovering
+  useEffect(() => {
+    if (isHovering) return;
+
+    const interval = setInterval(() => {
+      setAutoplayIteration((prev) => {
+        if (prev >= 1000) {
+          return 0; // wrap around
+        }
+        return prev + 5;
+      });
+    }, 45);
+
+    return () => clearInterval(interval);
+  }, [isHovering]);
+
+  // Handle mouse moves on SVG plot
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    if (!svgRef.current) return;
+    setIsHovering(true);
+    const rect = svgRef.current.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const viewboxX = (clientX / rect.width) * 350;
+
+    let x = Math.max(40, Math.min(310, viewboxX));
+    let y = 152;
+    let t = 0;
+
+    if (x <= 140) {
+      t = (-80 + Math.sqrt(3200 + 80 * x)) / 40;
+      y = (1 - t) * (1 - t) * 30 + 2 * (1 - t) * t * 130 + t * t * 145;
+    } else {
+      t = (-120 + Math.sqrt(-13600 + 200 * x)) / 100;
+      y = (1 - t) * (1 - t) * 145 + 2 * (1 - t) * t * 160 + t * t * 152;
+    }
+
+    const iteration = Math.round(((x - 40) / 270) * 1000);
+    const cost = Math.round(12500 - ((y - 30) / 122) * (12500 - 4120));
+
+    setHoverData({ x, y, iteration, cost });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    setHoverData(null);
+    setAutoplayIteration(0);
+  };
+
+  // Determine active plotting values (either hovered or autoplaying)
+  const activeIteration = hoverData ? hoverData.iteration : autoplayIteration;
+
+  // Calculate coordinates for the active iteration marker
+  const plotX = 40 + (activeIteration / 1000) * 270;
+  let plotY = 152;
+  let t = 0;
+
+  if (plotX <= 140) {
+    t = (-80 + Math.sqrt(3200 + 80 * plotX)) / 40;
+    plotY = (1 - t) * (1 - t) * 30 + 2 * (1 - t) * t * 130 + t * t * 145;
+  } else {
+    t = (-120 + Math.sqrt(-13600 + 200 * plotX)) / 100;
+    plotY = (1 - t) * (1 - t) * 145 + 2 * (1 - t) * t * 160 + t * t * 152;
+  }
+
+  const activeCost = Math.round(12500 - ((plotY - 30) / 122) * (12500 - 4120));
+
+  return (
+    <div className="my-6 p-4 rounded-2xl bg-white/5 border border-white/10 overflow-hidden relative group/graph">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-xs font-semibold text-gray-400">Solver Convergence Trace</span>
+        <span className="text-[10px] text-teal-400 bg-teal-400/10 px-2 py-0.5 rounded-full border border-teal-500/20">
+          {hoverData ? 'Interactive mode' : 'Simulating convergence...'}
+        </span>
+      </div>
+      
+      <svg
+        ref={svgRef}
+        className="w-full h-auto max-h-[160px] cursor-crosshair"
+        viewBox="0 0 350 200"
+        xmlns="http://www.w3.org/2000/svg"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Graph Axis lines */}
+        <line x1="40" y1="20" x2="40" y2="160" stroke="#64748b" strokeWidth="1" strokeOpacity="0.3"></line>
+        <line x1="40" y1="160" x2="310" y2="160" stroke="#64748b" strokeWidth="1" strokeOpacity="0.3"></line>
+        
+        {/* Convergence Curve path */}
+        <path 
+          d="M 40,30 Q 80,130 140,145 T 310,152" 
+          fill="none" 
+          stroke="#64ffda" 
+          strokeWidth="2" 
+        />
+        
+        {/* Static Key Highlights (Local traps, global converged target) */}
+        <circle cx="80" cy="130" r="3.5" fill="#fbbf24" opacity={isHovering ? 0.3 : 1}>
+          <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="140" cy="145" r="3.5" fill="#fbbf24" opacity={isHovering ? 0.3 : 1}>
+          <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="310" cy="152" r="4.5" fill="#00ff88" opacity={isHovering ? 0.3 : 1}>
+          <animate attributeName="r" values="3.5;6;3.5" dur="2.5s" repeatCount="indefinite" />
+        </circle>
+        
+        {/* Hover / Active Simulation crosshairs and indicators */}
+        <line
+          x1={plotX}
+          y1="20"
+          x2={plotX}
+          y2="160"
+          stroke="rgba(100, 255, 218, 0.3)"
+          strokeWidth="1"
+          strokeDasharray="2,2"
+        />
+        <circle
+          cx={plotX}
+          cy={plotY}
+          r="5.5"
+          fill={isHovering ? "#00e5ff" : "rgba(100, 255, 218, 0.8)"}
+          stroke="#ffffff"
+          strokeWidth="1.5"
+        />
+
+        {/* Dynamic Context Labels inside SVG */}
+        {!isHovering && (
+          <>
+            <text x="300" y="142" fill="#00ff88" fontFamily="sans-serif" fontSize="8" textAnchor="end" fontWeight="600">Global Optimum Reached</text>
+            <text x="85" y="122" fill="#fbbf24" fontFamily="sans-serif" fontSize="7" fontWeight="500">Local Optima Escaped</text>
+          </>
+        )}
+
+        {isHovering && activeIteration >= 130 && activeIteration <= 170 && (
+          <text x="85" y="122" fill="#fbbf24" fontFamily="sans-serif" fontSize="7" fontWeight="600">Local Optima Escaped!</text>
+        )}
+        {isHovering && activeIteration >= 950 && (
+          <text x="300" y="142" fill="#00ff88" fontFamily="sans-serif" fontSize="8" textAnchor="end" fontWeight="600">Global Optimum Reached!</text>
+        )}
+        
+        <text x="35" y="15" fill="#94a3b8" fontFamily="sans-serif" fontSize="7" textAnchor="start">Objective Value (Cost)</text>
+        <text x="310" y="172" fill="#94a3b8" fontFamily="sans-serif" fontSize="7" textAnchor="end">Iterations</text>
+      </svg>
+
+      {/* Hover Info Tooltip Box */}
+      <div
+        className="absolute pointer-events-none bg-slate-950/95 border border-teal-500/30 rounded-xl p-2 text-[9px] font-mono text-slate-200 shadow-xl backdrop-blur-sm z-30 transition-all duration-75"
+        style={{
+          left: `${Math.max(4, Math.min(68, (plotX / 350) * 100))}%`,
+          top: '8px',
+          opacity: isHovering || activeIteration > 0 ? 1 : 0,
+        }}
+      >
+        <div className="text-teal-400 font-bold border-b border-white/10 pb-1 mb-1">QIGWO Solver State</div>
+        <div>Iteration: <span className="text-white font-semibold">{activeIteration}</span></div>
+        <div>Current Cost: <span className="text-white font-semibold">{activeCost.toLocaleString()}</span></div>
+        {activeIteration >= 130 && activeIteration <= 170 && (
+          <div className="text-amber-400 text-[8px] mt-0.5">✓ Escaped local trap</div>
+        )}
+        {activeIteration >= 950 && (
+          <div className="text-emerald-400 text-[8px] mt-0.5">★ Convergence reached</div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 const projects = [
   {
@@ -89,46 +263,7 @@ export default function Projects() {
                   </p>
 
                   {/* Render Visual Graph if showGraph is true */}
-                  {project.showGraph && (
-                    <div className="my-6 p-4 rounded-2xl bg-white/5 border border-white/10 overflow-hidden relative">
-                      <svg className="w-full h-auto max-h-[160px]" viewBox="0 0 350 200" xmlns="http://www.w3.org/2000/svg">
-                        {/* Graph Axis lines */}
-                        <line x1="40" y1="20" x2="40" y2="160" stroke="#64748b" strokeWidth="1" strokeOpacity="0.4"></line>
-                        <line x1="40" y1="160" x2="310" y2="160" stroke="#64748b" strokeWidth="1" strokeOpacity="0.4"></line>
-                        
-                        {/* Convergence Curve path */}
-                        <path 
-                          d="M 40,30 Q 80,130 140,145 T 310,152" 
-                          fill="none" 
-                          stroke="#64ffda" 
-                          strokeWidth="2.5" 
-                          strokeDasharray="400" 
-                          strokeDashoffset="400"
-                          style={{
-                            animation: 'drawCurve 3s ease-out forwards infinite'
-                          }}
-                        />
-                        
-                        {/* Local Optima Points */}
-                        <circle cx="80" cy="130" r="3" fill="#fbbf24"></circle>
-                        <circle cx="140" cy="145" r="3" fill="#fbbf24"></circle>
-                        <circle cx="310" cy="152" r="3.5" fill="#00ff88"></circle>
-                        
-                        {/* Labels */}
-                        <text x="300" y="142" fill="#00ff88" fontFamily="sans-serif" fontSize="8" textAnchor="end" fontWeight="500">Optimum Reached</text>
-                        <text x="85" y="125" fill="#fbbf24" fontFamily="sans-serif" fontSize="7">Local Optima Escaped</text>
-                        
-                        <text x="35" y="15" fill="#94a3b8" fontFamily="sans-serif" fontSize="7" textAnchor="start">Objective Value (Cost)</text>
-                        <text x="310" y="172" fill="#94a3b8" fontFamily="sans-serif" fontSize="7" textAnchor="end">Iterations</text>
-                      </svg>
-                      <style dangerouslySetInnerHTML={{__html: `
-                        @keyframes drawCurve {
-                          from { stroke-dashoffset: 400; }
-                          to { stroke-dashoffset: 0; }
-                        }
-                      `}} />
-                    </div>
-                  )}
+                  {project.showGraph && <InteractiveGraph />}
                   
                   {/* Action Buttons */}
                   <div className="flex gap-4 mt-6 relative z-20">
