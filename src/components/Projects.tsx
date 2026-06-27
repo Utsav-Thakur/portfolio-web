@@ -177,6 +177,129 @@ function InteractiveGraph() {
   );
 }
 
+
+function InteractiveROCGraph() {
+  const [hoverData, setHoverData] = useState<{ x: number; y: number; fpr: number; tpr: number; threshold: number; precision: number; f1: number } | null>(null);
+  const [autoplayT, setAutoplayT] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  // Autoplay: animate threshold from 1.0 down to 0.0 and back
+  useEffect(() => {
+    if (isHovering) return;
+    const interval = setInterval(() => {
+      setAutoplayT((prev) => {
+        if (prev >= 1) return 0;
+        return prev + 0.004;
+      });
+    }, 45);
+    return () => clearInterval(interval);
+  }, [isHovering]);
+
+  const getROCPoint = (t: number) => {
+    // Quadratic bezier: from (40,160) control (45,55) to (310,40)
+    const x = (1 - t) * (1 - t) * 40 + 2 * (1 - t) * t * 45 + t * t * 310;
+    const y = (1 - t) * (1 - t) * 160 + 2 * (1 - t) * t * 55 + t * t * 40;
+    return { x, y };
+  };
+
+  const computeMetrics = (t: number) => {
+    const fpr = t;
+    const tpr = 1 - (getROCPoint(t).y - 40) / 120;
+    const threshold = 1.0 - t;
+    let precision = t < 0.02 ? 0.99 - t * 0.4 : 0.982 - (t - 0.02) * 0.83;
+    precision = Math.max(0.167, Math.min(1.0, precision));
+    const recall = Math.max(0, Math.min(1, tpr));
+    const f1 = (precision + recall) > 0 ? (2 * precision * recall) / (precision + recall) : 0;
+    return { fpr, tpr: recall, threshold, precision, f1 };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    if (!svgRef.current) return;
+    setIsHovering(true);
+    const rect = svgRef.current.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const viewboxX = (clientX / rect.width) * 350;
+    const clampedX = Math.max(40, Math.min(310, viewboxX));
+    const t = (clampedX - 40) / 270;
+    const { x, y } = getROCPoint(t);
+    const metrics = computeMetrics(t);
+    setHoverData({ x, y, ...metrics });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    setHoverData(null);
+    setAutoplayT(0);
+  };
+
+  const activeT = hoverData ? (1 - hoverData.threshold) : autoplayT;
+  const { x: plotX, y: plotY } = getROCPoint(activeT);
+  const activeMetrics = computeMetrics(activeT);
+  const isAtRisk = activeMetrics.threshold <= 0.78;
+
+  return (
+    <div className="my-6 p-4 rounded-2xl bg-white/5 border border-white/10 overflow-hidden relative group/graph">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-xs font-semibold text-gray-400">Model ROC Performance Curve</span>
+        <span className={`text-[10px] px-2 py-0.5 rounded-full border ${isAtRisk ? 'text-red-400 bg-red-400/10 border-red-500/20' : 'text-teal-400 bg-teal-400/10 border-teal-500/20'}`}>
+          {hoverData ? `Threshold: ${activeMetrics.threshold.toFixed(2)}` : 'Hover to adjust threshold'}
+        </span>
+      </div>
+
+      <svg
+        ref={svgRef}
+        className="w-full h-auto max-h-[160px] cursor-crosshair"
+        viewBox="0 0 350 200"
+        xmlns="http://www.w3.org/2000/svg"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Axis lines */}
+        <line x1="40" y1="20" x2="40" y2="160" stroke="#64748b" strokeWidth="1" strokeOpacity="0.3"></line>
+        <line x1="40" y1="160" x2="310" y2="160" stroke="#64748b" strokeWidth="1" strokeOpacity="0.3"></line>
+        {/* Baseline random classifier */}
+        <line x1="40" y1="160" x2="310" y2="40" stroke="#64748b" strokeWidth="1" strokeOpacity="0.2" strokeDasharray="4,4"></line>
+        {/* AUC fill */}
+        <path d="M 40,160 Q 45,55 310,40 L 310,160 Z" fill="rgba(100,255,218,0.05)" />
+        {/* ROC Curve */}
+        <path d="M 40,160 Q 45,55 310,40" fill="none" stroke="#64ffda" strokeWidth="2" />
+        {/* Optimal threshold point */}
+        <circle cx="46" cy="83" r="3.5" fill="#00ff88">
+          <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
+        </circle>
+        {!isHovering && (
+          <text x="55" y="86" fill="#00ff88" fontFamily="sans-serif" fontSize="7" fontWeight="600">Optimal (0.42)</text>
+        )}
+        {/* Active crosshair */}
+        <line x1={plotX} y1="20" x2={plotX} y2="160" stroke="rgba(100,255,218,0.3)" strokeWidth="1" strokeDasharray="2,2" />
+        <circle cx={plotX} cy={plotY} r="5.5" fill={isHovering ? (isAtRisk ? '#ff5f56' : '#00e5ff') : 'rgba(100,255,218,0.8)'} stroke="#ffffff" strokeWidth="1.5" />
+        {/* Axis Labels */}
+        <text x="35" y="15" fill="#94a3b8" fontFamily="sans-serif" fontSize="7" textAnchor="start">True Positive Rate</text>
+        <text x="310" y="172" fill="#94a3b8" fontFamily="sans-serif" fontSize="7" textAnchor="end">False Positive Rate</text>
+      </svg>
+
+      {/* Info Tooltip Box */}
+      <div
+        className="absolute pointer-events-none bg-slate-950/95 border border-teal-500/30 rounded-xl p-2 text-[9px] font-mono text-slate-200 shadow-xl backdrop-blur-sm z-30 transition-all duration-75"
+        style={{
+          left: `${Math.max(4, Math.min(68, (plotX / 350) * 100))}%`,
+          top: '8px',
+          opacity: isHovering || autoplayT > 0 ? 1 : 0,
+        }}
+      >
+        <div className={`font-bold border-b border-white/10 pb-1 mb-1 ${isAtRisk ? 'text-red-400' : 'text-teal-400'}`}>
+          {isAtRisk ? '⚠ AT-RISK CHURN' : '✓ ACTIVE Member'}
+        </div>
+        <div>Threshold: <span className="text-white font-semibold">{activeMetrics.threshold.toFixed(2)}</span></div>
+        <div>Recall (TPR): <span className="text-white font-semibold">{(activeMetrics.tpr * 100).toFixed(1)}%</span></div>
+        <div>Precision: <span className="text-white font-semibold">{(activeMetrics.precision * 100).toFixed(1)}%</span></div>
+        <div>F1-Score: <span className="text-white font-semibold">{activeMetrics.f1.toFixed(3)}</span></div>
+      </div>
+    </div>
+  );
+}
+
 const projects = [
   {
     title: 'Data-Driven Cost Optimization and Decision Analytics',
@@ -185,6 +308,14 @@ const projects = [
     demoLink: '/tsp/index.html',
     codeLink: 'https://github.com/Utsav-Thakur/TSP',
     showGraph: true
+  },
+  {
+    title: 'LoyaltyIQ — Airline Loyalty Churn Prediction & AI Retention',
+    category: 'Data Science & AI',
+    description: 'End-to-end behavioral intelligence system predicting disengaged airline loyalty members. XGBoost classifier (ROC-AUC 0.941) + KMeans segmentation + Claude AI generating personalised 90-day re-engagement strategies.',
+    demoLink: 'https://loyaltyiq-nine.vercel.app/',
+    codeLink: 'https://github.com/Utsav-Thakur/unlocking-behavioral-intelligence-in-airline-loyalty-programs',
+    showROCGraph: true
   },
   {
     title: 'Credit Risk Analysis & Financial Decision Support',
@@ -264,6 +395,7 @@ export default function Projects() {
 
                   {/* Render Visual Graph if showGraph is true */}
                   {project.showGraph && <InteractiveGraph />}
+                  {project.showROCGraph && <InteractiveROCGraph />}
                   
                   {/* Action Buttons */}
                   <div className="flex gap-4 mt-6 relative z-20">
